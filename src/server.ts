@@ -1,5 +1,6 @@
 import express from 'express';
-import connection from './database.js';
+import connection from './database.ts';
+import { router } from '../api/users.ts';
 
 const app = express();
 const port = 3000;
