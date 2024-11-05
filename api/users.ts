@@ -1,40 +1,35 @@
 import { Request, Response, Router} from "express";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import connection from "../src/database";
-
 
 export const router = Router();
 
+async function validCredentials(email, password, res: Response) {
+    const [users] = await connection.query("SELECT * from User where email = ?", [email]);
+    
+    if (Array.isArray(users) && users.length === 0) {
+        res.status(400).json({msg: "Invalid email or password"});
+        return;
+    }
+
+    const result = await bcrypt.compare(password, users[0].password);
+
+    if (result) {
+        res.status(200).json({msg: "Password is correct"});
+        return;
+    }
+
+    res.status(400).json({msg: "Invalid email or password"});
+    return;
+}
 
 router.post('/auth', async (req: Request, res: Response) => {
     const { email, password } = req.body;
-    connection.query<any>("SELECT * from user where email = ?", [email], (err, rows) => {
-        if (err){
-            return res.status(500).json({msg: "Internal MySQL Error"});
-        }
-        else if (rows.length != 1) {
-            return res.status(400).json({msg: "Invalid email or password"});
-        }
-        bcrypt.compare(password, rows[0].password)
-        .then((result) => {
-            if (result){
-                connection.query("UPDATE  user set last_login=now() WHERE email = ?", [rows[0].email], (err) => {
-                    if (err){
-                        return res.status(500)
-                        .json({msg: `Failed to create token: ${err}` });
-                    }else{
-                        //console.log({Useremail: email}, {password: password});
-                        return res.status(200).json({token: jwt.encode({Useremail: email}, process.env.SECRET_KEY || "")});
-                        
-                    }
-                });
-            }else{
-                return res.status(400).json({msg: "Invalid email or password"});
-            }
-        }).catch(() => {
-            return res.status(403)
-            .json({ msg: 'BCRYPT error' })
-        });
-    })
-});
 
+    try {
+        await validCredentials(email, password, res);
+    } catch(err) {
+        res.status(500).json(err);
+        return;
+    }
+});
