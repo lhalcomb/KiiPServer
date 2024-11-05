@@ -3,9 +3,10 @@ import 'dotenv/config';
 
 const connection = await mysql.createConnection({
     host: 'mcs.drury.edu',
-    user: process.env.DATABASE_USER,
+    user: process.env.DATABASE_USER, 
     password: process.env.DATABASE_PASSWORD,
     database: process.env.DATABASE_SCHEMA,
 });
+// Comment for checking Git connection.
 
 export default connection;
