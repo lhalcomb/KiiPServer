@@ -10,7 +10,6 @@ async function getTransaction(user_id) {
 
 async function createTransaction(req: Request, res: Response) {
     const { fk_User_id, memo, title, amount, isPayment, isRecurring} = req.body;
-
     try {
         await connection.query("INSERT INTO Transactions (fk_User_id, memo, title, amount, isPayment, isRecurring) VALUES (?, ?, ?, ?, ?, ?)", [fk_User_id, memo, title, amount, isPayment, isRecurring]);
         res.status(200).send({message: "Transaction posted successfully. "});
@@ -20,7 +19,11 @@ async function createTransaction(req: Request, res: Response) {
 }
 
 router.get('/transactions', async (req: Request, res: Response) => {
-    const user_id = req.body.user_id;
+    const user_id = req.body.user_id as string;
+
+    if (!user_id){
+        res.status(400).send({message: "User ID is required"});
+    }
     
     try {
         const transactions = await getTransaction(user_id);
