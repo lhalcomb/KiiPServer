@@ -2,7 +2,7 @@ import { Request, Response, Router} from "express";
 import bcrypt from "bcryptjs";
 import connection from "../src/database";
 
-export const router = Router();
+const router = Router();
 
 async function validCredentials(email, password, res: Response) {
     const [users] = await connection.query("SELECT * from User where email = ?", [email]);
@@ -23,6 +23,7 @@ async function validCredentials(email, password, res: Response) {
     return;
 }
 
+
 router.post('/auth', async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
@@ -33,3 +34,5 @@ router.post('/auth', async (req: Request, res: Response) => {
         return;
     }
 });
+
+export default router;

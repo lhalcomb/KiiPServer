@@ -1,12 +1,14 @@
 import express from 'express';
 import connection from './database.ts';
-import { router } from '../api/users.ts';
+import users from '../api/users.ts';
+import transactions from '../api/transactions.ts';
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
-app.use(router);
+app.use(users);
+app.use(transactions);
 
 app.listen(port, () => {
     console.log(`App listening on http://localhost:${port}`)
