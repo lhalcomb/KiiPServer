@@ -1,5 +1,6 @@
 import { Request, Response, Router} from "express";
 import connection from "../src/database";
+import {AuthorizeUser} from "./users.ts";
 
 const router = Router();
 
@@ -8,19 +9,21 @@ async function getTransaction(user_id) {
     return transactions;
 }
 
-async function createTransaction(req: Request, res: Response) {
-    const { fk_User_id, memo, title, amount, isPayment, isRecurring} = req.body;
+async function createTransaction(user_id, req: Request, res: Response) {
+
+    const { memo, title, amount, isPayment, isRecurring} = req.body;
     try {
-        await connection.query("INSERT INTO Transactions (fk_User_id, memo, title, amount, isPayment, isRecurring) VALUES (?, ?, ?, ?, ?, ?)", [fk_User_id, memo, title, amount, isPayment, isRecurring]);
+        await connection.query("INSERT INTO Transactions (fk_User_id, memo, title, amount, isPayment, isRecurring) VALUES (?, ?, ?, ?, ?, ?)", [user_id, memo, title, amount, isPayment, isRecurring]);
         res.status(200).send({message: "Transaction posted successfully. "});
     } catch {
         res.status(500).send({message: "Error creating transactions data. "});
     }
 }
 
-router.get('/transactions', async (req: Request, res: Response) => {
-    const user_id = req.body.user_id as string;
+router.post('/transactions', async (req: Request, res: Response) => {
+    const user_id = await AuthorizeUser(res, req);
 
+    console.log(user_id);
     if (!user_id){
         res.status(400).send({message: "User ID is required"});
     }
@@ -34,8 +37,9 @@ router.get('/transactions', async (req: Request, res: Response) => {
     }
 });
 
-router.post('/transactions', async (req: Request, res: Response) => {
-    await createTransaction(req, res);
+router.post('/transaction', async (req: Request, res: Response) => {
+    const userId = AuthorizeUser(res, req);
+    await createTransaction(userId, req, res);
 });
 
 export default router;
