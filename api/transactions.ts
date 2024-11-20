@@ -23,7 +23,6 @@ async function createTransaction(user_id, req: Request, res: Response) {
 router.post('/transactions', async (req: Request, res: Response) => {
     const user_id = await AuthorizeUser(res, req);
 
-    console.log(user_id);
     if (!user_id){
         res.status(400).send({message: "User ID is required"});
     }
