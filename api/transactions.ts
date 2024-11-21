@@ -16,7 +16,6 @@ async function createTransaction(user_id, req: Request, res: Response) {
         res.status(200).send({message: "Transaction posted successfully. "});
         return;
     } catch {
-        console.log('five hundy')
         res.status(500).send({message: "Error creating transactions data. "});
         return;
     }
@@ -29,7 +28,6 @@ router.post('/transactions', async (req: Request, res: Response) => {
         return;
     }
 
-    console.log(user_id);
     if (!user_id){
         res.status(400).send({message: "User ID is required"});
         return;

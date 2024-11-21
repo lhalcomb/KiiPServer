@@ -57,7 +57,6 @@ export async function AuthorizeUser(res: Response, req: Request){
             const last_login = users[0].last_login;
 
             if (Date.now() - new Date(last_login).getTime() > tokenTime * 1000) {
-                console.log('expired')
                 res.status(401).json({msg: "Token has expired. Please login again."});
                 return;
             }
