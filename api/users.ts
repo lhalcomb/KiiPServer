@@ -43,7 +43,8 @@ async function validCredentials(email, password, res: Response, secretKey) {
 export async function AuthorizeUser(res: Response, req: Request){
     const token = req.body.token;
     const secretKey = process.env.SECRET_KEY;
-    const tokenTime = process.env.TOKEN_TIME;
+    let tokenTime = 60; // 1 minute
+    console.log(tokenTime);
     try{
         const decoded = await decodeToken(token, secretKey);
         if(decoded){
@@ -58,7 +59,7 @@ export async function AuthorizeUser(res: Response, req: Request){
             const last_login = users[0].last_login;
             console.log(Date.now() - new Date(last_login).getTime());
 
-            if (Date.now() - new Date(last_login).getTime() > Number(tokenTime) * 1000) {
+            if (Date.now() - new Date(last_login).getTime() > tokenTime * 1000) {
                 console.log('expired')
                 res.status(401).json({msg: "Token has expired. Please login again."});
                 return;
