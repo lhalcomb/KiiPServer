@@ -22,10 +22,12 @@ async function validCredentials(email, password, res: Response, secretKey) {
     
     if (Array.isArray(users) && users.length === 0) {
         res.status(400).json({msg: "Invalid email or password"});
+        
         return;
     }
 
     const result = await bcrypt.compare(password, users[0].password);
+    
 
     if (result) {
         const encodetoken = await encodeToken(users[0].User_id, secretKey);
@@ -62,6 +64,7 @@ router.post('/auth', async (req: Request, res: Response) => {
         await validCredentials(email, password, res, secretKey);
     } catch(err) {
         res.status(500).json(err);
+        console.log(email);
         return;
     }
 });
