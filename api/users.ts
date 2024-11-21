@@ -44,20 +44,17 @@ export async function AuthorizeUser(res: Response, req: Request){
     const token = req.body.token;
     const secretKey = process.env.SECRET_KEY;
     let tokenTime = 60; // 1 minute
-    console.log(tokenTime);
     try{
         const decoded = await decodeToken(token, secretKey);
         if(decoded){
             const [users] = await connection.query("SELECT * FROM User where User_id = ? ", [decoded.UserId]);
 
             if (Array.isArray(users) && users.length === 0) {
-                console.log('inval email or password')
                 res.status(400).json({msg: "Invalid email or password"});
                 return;
             }
 
             const last_login = users[0].last_login;
-            console.log(Date.now() - new Date(last_login).getTime());
 
             if (Date.now() - new Date(last_login).getTime() > tokenTime * 1000) {
                 console.log('expired')
@@ -69,7 +66,6 @@ export async function AuthorizeUser(res: Response, req: Request){
         }
     }
     catch(err){
-        console.log('err')
         res.status(401).json({msg: "Decode Token Error"});
         return;
     }
@@ -90,7 +86,6 @@ router.post('/auth', async (req: Request, res: Response) => {
 });
 
 router.post('/checkToken', async (req: Request, res: Response) => {
-    console.log('CHECK TOKEN')
     try {
         const user_id = await AuthorizeUser(res, req);
 

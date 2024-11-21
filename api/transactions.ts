@@ -50,7 +50,6 @@ router.post('/transaction', async (req: Request, res: Response) => {
     const userId =  await AuthorizeUser(res, req);
 
     if (!userId) {
-        console.log('no user id')
         return;
     }
 
