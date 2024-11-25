@@ -43,7 +43,7 @@ async function validCredentials(email, password, res: Response, secretKey) {
 export async function AuthorizeUser(res: Response, req: Request){
     const token = req.body.token;
     const secretKey = process.env.SECRET_KEY;
-    let tokenTime = 60; // 1 minute
+    let tokenTime = 60 * 60; // 1 minute
     try{
         const decoded = await decodeToken(token, secretKey);
         if(decoded){

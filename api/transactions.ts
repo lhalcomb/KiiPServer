@@ -21,6 +21,21 @@ async function createTransaction(user_id, req: Request, res: Response) {
     }
 }
 
+async function deleteTransaction (user_id, req: Request, res: Response) {
+    const { trans_id } = req.params;
+   try{
+    await connection.query("DELETE FROM Transactions WHERE fk_User_id = (?) AND id = (?)", [user_id, trans_id]);
+    res.status(200).send({message: "Transaction deleted successfully. "});
+    return;
+
+   }
+   catch{
+    res.status(500).send({message: "Error deleting transaction data. "});
+    return;
+   }
+
+}
+
 router.post('/transactions', async (req: Request, res: Response) => {
     const user_id = await AuthorizeUser(res, req);
 
